@@ -23,8 +23,6 @@ public class InMemoryListAppender implements Appender {
 
     @Override
     public void append(LogEvent event) {
-        System.out.println("append");
-
         if (logEvents == null)
             throw new IllegalStateException(this.getClass().getSimpleName() + " - " + this.getName() + " - not initialized");
 
