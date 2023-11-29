@@ -1,5 +1,5 @@
 import Util.InMemoryListAppender;
-import com.example.App;
+import fae.weather.App;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
