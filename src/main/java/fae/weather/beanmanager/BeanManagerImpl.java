@@ -1,4 +1,4 @@
-package fae.weather.beancontainer;
+package fae.weather.beanmanager;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,10 +10,10 @@ import java.util.*;
  * It uses a map to hold the beans.
  * The underlying map is synchronized to allow concurrent access.
  *
- * @see BeanContainer
+ * @see BeanManager
  */
-public class BeanContainerImpl implements BeanContainer {
-    private static final Logger LOGGER = LogManager.getLogger(BeanContainerImpl.class);
+public class BeanManagerImpl implements BeanManager {
+    private static final Logger LOGGER = LogManager.getLogger(BeanManagerImpl.class);
     /**
      * The map of beans.
      * This map is synchronized to allow concurrent access.
@@ -60,6 +60,9 @@ public class BeanContainerImpl implements BeanContainer {
      */
     @Override
     public void invalidateAllBeans() {
+        String beanCount = String.valueOf(beans.size());
+        LOGGER.debug("Invalidating all <"+  beanCount + "> beans.");
         beans.clear();
+        LOGGER.debug("All <" + beanCount + "> beans invalidated.");
     }
 }

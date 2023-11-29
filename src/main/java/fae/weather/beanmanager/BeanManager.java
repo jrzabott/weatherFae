@@ -1,11 +1,11 @@
-package fae.weather.beancontainer;
+package fae.weather.beanmanager;
 
 /**
  * Will be used to hold all the beans.
  * Beans shoudl be added to this container at startup.
  * Beans will likely be unique, so we will use a map to hold them.
  */
-public interface BeanContainer {
+public interface BeanManager {
     /**
      * Add a bean to the container.
      *
