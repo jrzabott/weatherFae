@@ -1,9 +1,9 @@
 package fae.weather.beancontainer;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.*;
 
 /**
  * An implementation of BeanContainer.
@@ -13,6 +13,7 @@ import java.util.Optional;
  * @see BeanContainer
  */
 public class BeanContainerImpl implements BeanContainer {
+    private static final Logger LOGGER = LogManager.getLogger(BeanContainerImpl.class);
     /**
      * The map of beans.
      * This map is synchronized to allow concurrent access.
@@ -21,11 +22,19 @@ public class BeanContainerImpl implements BeanContainer {
 
     @Override
     public void addBean(Object bean) {
+        if (Objects.isNull(bean)) {
+            LOGGER.warn("Trying to add a null bean to the container.");
+            return;
+        }
         beans.putIfAbsent(bean.getClass().getName(), bean);
     }
 
     @Override
     public void removeBean(Object bean) {
+        if (Objects.isNull(bean)) {
+            LOGGER.warn("Trying to remove a null bean from the container.");
+            return;
+        }
         beans.remove(bean.getClass().getName());
     }
 
@@ -44,5 +53,13 @@ public class BeanContainerImpl implements BeanContainer {
     @Override
     public Object[] getAllBeans() {
         return beans.values().toArray();
+    }
+
+    /**
+     * Technically, in this implementation references are removed from the underlying container storage.
+     */
+    @Override
+    public void invalidateAllBeans() {
+        beans.clear();
     }
 }

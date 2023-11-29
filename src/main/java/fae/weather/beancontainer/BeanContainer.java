@@ -42,4 +42,10 @@ public interface BeanContainer {
      * @return all beans
      */
     Object[] getAllBeans();
+
+    /**
+     * Invalidate all beans' references.
+     * This will allow the garbage collector to collect them.
+     */
+    void invalidateAllBeans();
 }
