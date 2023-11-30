@@ -4,6 +4,7 @@ import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.ErrorHandler;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.appender.DefaultErrorHandler;
 import org.apache.logging.log4j.message.Message;
 
 import java.io.Serializable;
@@ -16,6 +17,7 @@ public class InMemoryListAppender implements Appender {
     private final String name;
     private Collection<LogEvent> logEvents;
     private boolean isStarted;
+    private ErrorHandler errorHandler = new DefaultErrorHandler(this);
 
     public InMemoryListAppender(String name) {
         this.name = name;
@@ -46,17 +48,17 @@ public class InMemoryListAppender implements Appender {
 
     @Override
     public ErrorHandler getHandler() {
-        return null;
+        return errorHandler;
     }
 
     @Override
     public void setHandler(ErrorHandler handler) {
-
+        this.errorHandler = handler;
     }
 
     @Override
     public State getState() {
-        return null;
+        return isStarted ? State.STARTED : State.STOPPED;
     }
 
     @Override
