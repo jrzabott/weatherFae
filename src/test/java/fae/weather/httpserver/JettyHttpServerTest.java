@@ -71,4 +71,67 @@ class JettyHttpServerTest {
         jettyHttpServer.stop();
 
     }
+
+    @Test
+    void startHttpServerWillStartListeningInPortAndStop() throws IOException {
+        JettyHttpServer jettyHttpServer = new JettyHttpServer();
+        jettyHttpServer.start();
+        assertTrue(jettyHttpServer.isRunning());
+
+        //check and assert that port 8080 is listening using HttpUrlConnection
+        final URI uri = URI.create(LOCALHOST + PORT_DELIM + HTTP_PORT);
+        HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+        connection.setRequestMethod("GET");
+
+        // Check that the response code indicates success (e.g., 200 OK; 204 No Content)
+        int responseCode = connection.getResponseCode();
+        assertTrue(responseCode == 200 || responseCode == 204);
+
+        // Stop the server after the test
+        jettyHttpServer.stop();
+        assertFalse(jettyHttpServer.isRunning());
+    }
+
+    @Test
+    void startHttpServerWillStartListeningInPortAndStopAndStartAgain() throws IOException {
+        JettyHttpServer jettyHttpServer = new JettyHttpServer();
+        jettyHttpServer.start();
+        assertTrue(jettyHttpServer.isRunning());
+
+        //check and assert that port 8080 is listening using java network methods
+        final URI uri = URI.create(LOCALHOST + PORT_DELIM + HTTP_PORT);
+        HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+        connection.setRequestMethod("GET");
+
+        // Check that the response code indicates success (e.g., 200 OK; 204 No Content)
+        int responseCode = connection.getResponseCode();
+        assertTrue(responseCode == 200 || responseCode == 204);
+
+        // Stop the server after the test
+        jettyHttpServer.stop();
+        assertFalse(jettyHttpServer.isRunning());
+
+        jettyHttpServer.start();
+        assertTrue(jettyHttpServer.isRunning());
+
+        //check and assert that server is listening in the port using HttpUrlConnection
+        final URI uri2 = URI.create(LOCALHOST + PORT_DELIM + HTTP_PORT);
+        HttpURLConnection connection2 = (HttpURLConnection) uri2.toURL().openConnection();
+        connection2.setRequestMethod("GET");
+
+        // Check that the response code indicates success (e.g., 200 OK; 204 No Content)
+        int responseCode2 = connection2.getResponseCode();
+        assertTrue(responseCode2 == 200 || responseCode2 == 204);
+
+        // Stop the server after the test
+        jettyHttpServer.stop();
+        assertFalse(jettyHttpServer.isRunning());
+    }
+
+    @Test
+    void stopNeverStartedHttpServer() {
+        JettyHttpServer jettyHttpServer = new JettyHttpServer();
+        jettyHttpServer.stop();
+        assertFalse(jettyHttpServer.isRunning());
+    }
 }
