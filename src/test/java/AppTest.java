@@ -1,4 +1,3 @@
-import Util.InMemoryListAppender;
 import fae.weather.App;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -10,6 +9,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import util.InMemoryListAppender;
 
 class AppTest {
     private static final String LOG_MESSAGE = "Hello World!";

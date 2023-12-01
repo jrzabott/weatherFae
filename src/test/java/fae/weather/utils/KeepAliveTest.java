@@ -1,14 +1,15 @@
 package fae.weather.utils;
 
-import Util.InMemoryListAppender;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import util.InMemoryListAppender;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +26,11 @@ class KeepAliveTest {
     @BeforeEach
     void setUp() {
         keepAlive = new KeepAlive();
+    }
+
+    @AfterEach
+    void tearDown() {
+        Configurator.reconfigure();
     }
 
     @Test
@@ -69,10 +75,9 @@ class KeepAliveTest {
     private void startLogAppender() {
         // Configuring log4j2
         Configurator.setRootLevel(Level.ALL);
-        LOG_APPENDER.start();
 
         // Adding appender to root logger programmatically
-        logContext = (LoggerContext) LogManager.getContext( false);
+        logContext = (LoggerContext) LogManager.getContext(false);
         final Configuration logConfiguration = logContext.getConfiguration();
 
         // The importance of this is that we can add the appender to the root logger and it will be inherited by all loggers
@@ -80,6 +85,8 @@ class KeepAliveTest {
 
         // now that we know all loggers will inherit the appender, add it to the root logger
         logConfiguration.getRootLogger().addAppender(LOG_APPENDER, null, null);
+        logConfiguration.addAppender(LOG_APPENDER);
+        LOG_APPENDER.start();
 
         // without this, log events will not be written to the new added appender
         logContext.updateLoggers();

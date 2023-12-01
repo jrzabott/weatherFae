@@ -12,7 +12,7 @@ import org.apache.logging.log4j.core.config.Configurator;
  * The main class of the application.
  */
 public class App {
-    private static final Logger LOGGER = LogManager.getLogger(App.class);
+    private final Logger logger = LogManager.getLogger();
     private static final String HELLO_WORLD = "Hello World!";
 
     private final KeepAlive keepAlive;
@@ -32,7 +32,7 @@ public class App {
         App app = new App(beanManager, keepAlive);
         beanManager.addBean(app);
         app.start();
-        LOGGER.debug(HELLO_WORLD);
+        app.logger.debug(HELLO_WORLD);
     }
 
     public boolean isRunning() {
@@ -44,18 +44,18 @@ public class App {
     }
 
     void start() {
-        LOGGER.debug("Starting the application.");
+        logger.debug("Starting the application.");
 
         //starting keep alive thread
         keepAlive.start();
 
         //End of initialization
         running = true;
-        LOGGER.debug("Application started.");
+        logger.debug("Application started.");
     }
 
     public void stop() {
-        LOGGER.debug("Stopping the application.");
+        logger.debug("Stopping the application.");
         beanManager.invalidateAllBeans();
 
         //stopping keep alive thread
@@ -63,6 +63,6 @@ public class App {
 
         //End of destruction
         running = false;
-        LOGGER.debug("Application stopped.");
+        logger.debug("Application stopped.");
     }
 }

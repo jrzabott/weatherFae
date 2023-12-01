@@ -1,4 +1,4 @@
-package Util;
+package util;
 
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.ErrorHandler;
