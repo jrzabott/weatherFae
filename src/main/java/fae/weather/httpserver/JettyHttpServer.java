@@ -20,7 +20,8 @@ public class JettyHttpServer implements HttpServer {
 
     @Override
     public void stop() {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
+        // at the end isRunning should be false
+        isRunning = false;
     }
 
     @Override
