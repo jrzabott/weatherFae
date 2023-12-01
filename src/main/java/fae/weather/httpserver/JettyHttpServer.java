@@ -6,10 +6,16 @@ package fae.weather.httpserver;
 public class JettyHttpServer implements HttpServer {
 
     private static final String NOT_IMPLEMENTED_YET = "Not implemented yet.";
+    private boolean isRunning;
+
+    public boolean isRunning() {
+        return isRunning;
+    }
 
     @Override
     public void start() {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
+        // at the end isRunning should be true
+        isRunning = true;
     }
 
     @Override
