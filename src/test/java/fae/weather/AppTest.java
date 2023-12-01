@@ -3,8 +3,6 @@ package fae.weather;
 import fae.weather.beanmanager.BeanManager;
 import fae.weather.beanmanager.BeanManagerImpl;
 import fae.weather.utils.KeepAlive;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AppTest {
 
-    private static final Logger LOGGER = LogManager.getLogger(AppTest.class);
     private App app;
 
     @BeforeEach
@@ -59,9 +56,7 @@ class AppTest {
 
     @Test
     void appIsStillRunningAfterThreeSeconds() {
-        LOGGER.debug("Test started. Waiting for 3 seconds...");
         await().atLeast(3, TimeUnit.SECONDS);
-        LOGGER.debug("Awake after 3 seconds.");
         assertTrue(app.isRunning());
     }
 }

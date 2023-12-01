@@ -6,7 +6,6 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import util.InMemoryListAppender;
@@ -19,18 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KeepAliveTest {
 
-    private static final InMemoryListAppender LOG_APPENDER = new InMemoryListAppender("InMemoryListAppender");
+    private static final InMemoryListAppender IN_MEMORY_LIST_APPENDER = new InMemoryListAppender("InMemoryListAppender");
     private static LoggerContext logContext;
     private KeepAlive keepAlive;
 
     @BeforeEach
     void setUp() {
         keepAlive = new KeepAlive();
-    }
-
-    @AfterEach
-    void tearDown() {
-        Configurator.reconfigure();
     }
 
     @Test
@@ -62,7 +56,7 @@ class KeepAliveTest {
         await().atLeast(1, TimeUnit.SECONDS);
 
         assertTrue(keepAlive.isAlive());
-        Assertions.assertThat(LOG_APPENDER.getLogEventsMessagesAsText()).contains("Keep alive thread is already running.");
+        Assertions.assertThat(IN_MEMORY_LIST_APPENDER.getLogEventsMessagesAsText()).contains("Keep alive thread is already running.");
 
         stopLogAppender();
     }
@@ -70,6 +64,7 @@ class KeepAliveTest {
     private void stopLogAppender() {
         logContext.getConfiguration().getRootLogger().removeAppender("InMemoryListAppender");
         logContext.getConfiguration().getRootLogger().setAdditive(false);
+        Configurator.setRootLevel(Level.DEBUG);
     }
 
     private void startLogAppender() {
@@ -84,11 +79,71 @@ class KeepAliveTest {
         logConfiguration.getRootLogger().setAdditive(true);
 
         // now that we know all loggers will inherit the appender, add it to the root logger
-        logConfiguration.getRootLogger().addAppender(LOG_APPENDER, null, null);
-        logConfiguration.addAppender(LOG_APPENDER);
-        LOG_APPENDER.start();
+        logConfiguration.getRootLogger().addAppender(IN_MEMORY_LIST_APPENDER, null, null);
+        logConfiguration.addAppender(IN_MEMORY_LIST_APPENDER);
+        IN_MEMORY_LIST_APPENDER.start();
 
         // without this, log events will not be written to the new added appender
         logContext.updateLoggers();
+    }
+
+    @Test
+    void keepAliveStopsAfterStop() {
+        keepAlive.start();
+        await().atLeast(3, TimeUnit.SECONDS);
+        keepAlive.stop();
+        await().atLeast(1, TimeUnit.SECONDS);
+        assertFalse(keepAlive.isAlive());
+    }
+
+    @Test
+    void keepAliveCanRunMultipleTimes() {
+        keepAlive.start();
+        await().atLeast(3, TimeUnit.SECONDS);
+        keepAlive.stop();
+        await().atLeast(1, TimeUnit.SECONDS);
+        assertFalse(keepAlive.isAlive());
+        keepAlive.start();
+        await().atLeast(3, TimeUnit.SECONDS);
+        keepAlive.stop();
+        await().atLeast(1, TimeUnit.SECONDS);
+        assertFalse(keepAlive.isAlive());
+    }
+
+    @Test
+    void keepAliveCanRunMultipleTimesWithDifferentThreads() {
+        KeepAlive keepAlive1 = new KeepAlive();
+        KeepAlive keepAlive2 = new KeepAlive();
+        keepAlive1.start();
+        await().atLeast(3, TimeUnit.SECONDS);
+        keepAlive1.stop();
+        await().atLeast(1, TimeUnit.SECONDS);
+        assertFalse(keepAlive1.isAlive());
+        keepAlive2.start();
+        await().atLeast(3, TimeUnit.SECONDS);
+        keepAlive2.stop();
+        await().atLeast(1, TimeUnit.SECONDS);
+        assertFalse(keepAlive2.isAlive());
+    }
+
+    @Test
+    void keepAliveStopBeforeStart() {
+        keepAlive.stop();
+        await().atLeast(1, TimeUnit.SECONDS);
+        assertFalse(keepAlive.isAlive());
+    }
+
+    @Test
+    void setKeepAliveRestartedWillRemainAliveAfter3Seconds() {
+        keepAlive.start();
+        await().atLeast(3, TimeUnit.SECONDS);
+        keepAlive.stop();
+        await().atLeast(1, TimeUnit.SECONDS);
+        assertFalse(keepAlive.isAlive());
+        keepAlive.start();
+        await().atLeast(3, TimeUnit.SECONDS);
+        keepAlive.stop();
+        await().atLeast(1, TimeUnit.SECONDS);
+        assertFalse(keepAlive.isAlive());
     }
 }
